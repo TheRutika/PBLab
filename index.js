@@ -28,9 +28,7 @@ io.on('connection', (socket) => {
 });
 app.use(express.static (path.resolve("./public"))); //diretorio público para acessar
 //hello hello
-app.get('/', (req, res) => {
-    res.sendFile("/public/index.html....");
-});
+
 
 server.listen(9000,()=>{
     console.log("server is running on port 9000");
