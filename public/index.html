@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAT_APP</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    
+   
+    <!-- Messages container -->
+    <div class="message-container" id="messages"></div>
+ 
+    <!-- Send container -->
+    <div class="send-container">
+        <input type="text" id="message" placeholder="Enter Message">
+        <button id="sendBtn">SEND</button>
+    </div>
+
+    <!-- Placeholder -->
+    <div class="placeholder"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+// Prompt the user for their name
+const userName = prompt("Enter your name: ");
+if (!userName.trim()) {
+    // Handle empty name
+    alert("Name cannot be empty!");
+    location.reload(); // Reload the page
+}
+
+// Emit the user's name to the server
+socket.emit("new-user", userName);
+
+// Get DOM elements
+const sendBtn = document.getElementById('sendBtn');
+const messageInput = document.getElementById('message');
+const messagesContainer = document.getElementById('messages');
+
+// Socket.io event handler for receiving messages
+socket.on('message', (message) => {
+    // Create a new message element
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message.content;
+
+    // Determine the alignment based on the sender's name
+    if (message.senderName === userName) {
+        messageDiv.classList.add('message', 'right'); // Messages from the current user
+    } else {
+        messageDiv.classList.add('message', 'left'); // Messages from other users
+    }
+
+    // Append the message to the messages container
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to bottom
+});
+
+// Sending a chat message to server on button click
+sendBtn.addEventListener("click", () => {
+    const message = messageInput.value;
+    socket.emit("user-message", { content: message, senderName: userName });
+    messageInput.value = ''; // Clear input after sending
+});
+
+    </script>
+</body>
+</html>
